@@ -1,46 +1,92 @@
-#Импорт
-from flask import Flask, render_template, request, send_from_directory
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Генератор мемов</title>
+</head>
+<body>
+  <header class="header">
+    <img src="../static/img/logo.svg" alt="logo" width="50" height="50">
+    <ul class="main-list">
+        <li class="list__item">
+          <a href="">Главная</a>
+        </li>
+        <li class="list__item">
+          <a href="">Коллекция</a>
+        </li>
+        <li class="list__item">
+          <a href="">Связь</a>
+        </li>
+    </ul>
+  </header>
+  <main>
+    {% block content %}
+    <div class="form-block">
+      <h1>Сгенерируй свой мем!</h1>
+      <form method="POST" action="{{ url_for('index') }}">
+        <ul class="form-list">
+          <li class="form-list_item">
+            <label for="image-selector">Выбери мем</label>
+            <select name="image-selector" id="image-selector">
+              <option value="logo.svg" {% if selected_image == 'logo.svg' %}selected{% endif %}>Выбери мем</option>
+              <option value="meme_1.jpg" {% if selected_image == 'meme_1.jpg' %}selected{% endif %}>Девочка и пожар</option>
+              <option value="meme_2.jpg" {% if selected_image == 'meme_2.jpg' %}selected{% endif %}>Две кнопки</option>
+              <!--Задание №1. Добавь сюда новые мемы -->
+              <option value="mem3.png" {% if selected_image == 'mem3.png' %}selected{% endif %}>что ты сказал</option>
+              <option value="mem.jpg" {% if selected_image == 'mem.jpg' %}selected{% endif %}>да ладно</option>
+              <option value="mem 2.jpg" {% if selected_image == 'mem 2.jpg' %}selected{% endif %}>а ты не плох</option>
+
+            </select>
+          </li>
+          <li class="form-list_item">
+            <label for="textTop">Введите текст сверху</label>
+            <input class="input_text" type="text" placeholder="Введите текст" name="textTop">
+          </li>
+          <li class="form-list_item">
+            <label for="textBottom">Введите текст снизу</label>
+            <input class="input_text" type="text" placeholder="Введите текст" name="textBottom">
+          </li>
+          <li class="form-list_item">
+            <label for="color-selector">Цвет текста</label>
+            <select name="color-selector" id="color-selector">
+              <option value="white" {% if selected_color == 'white' %}selected{% endif %}>Белый</option>
+              <option value="black" {% if selected_color == 'black' %}selected{% endif %}>Черный</option>
+              <!--Доп.Задание №1. Добавь сюда новые цвета -->
 
 
-app = Flask(__name__)
+            </select>
+          </li>
+          <li class="form-list_item">
+            <label for="textTop_y">Введите расположение вверхнего текста по Y</label>
+            <input class="input_text" id="textTop_y" type="text" placeholder="Введите текст" name="textTop_y">
+          </li>
+          <li class="form-list_item">
+            <label for="textBottom_y">Введите расположение нижнего текста по Y</label>
+            <input class="input_text" id="textBottom_y" type="text" placeholder="Введите текст" name="textBottom_y">
+          </li>
+          <button type="submit">Выбрать</button>
+        </ul>
+      </form>
+    </div>
+    <div class="meme-block" id="memeBlock">
+      
+      <p class="text_top" style="<!-- Задание №3. Помещаем переменные в CSS -->">{{text_top}}</p>
 
-#Результаты формы
-@app.route('/', methods=['GET','POST'])
-def index():
-    if request.method == 'POST':
-        # получаем выбранное изображение
-        selected_image = request.form.get('image-selector')
+      <img class="meme" src="{{ url_for('serve_images', path=selected_image) }}" alt="{{ selected_image }}">
 
-        # Задание №2.Получаем текст
-        text_top = request.form['text_top']
-        text_bottom = request.form['text_bottom']
-        # Задание №3. Получаем расположение текста
-       
+      <p class="text_bottom" style="<!-- Задание №3. Помещаем переменные в CSS -->">{{text_bottom}}</p>
+    </div>
+    {% endblock %}
+  </main>
+  <footer>
 
-        # Задание №3. Получаем цвет текста
-        
-
-        return render_template('index.html', 
-                               # отображаем выбранное изображение
-                               selected_image=selected_image, 
-                               text_top = text_top,
-                               text_bottom = text_bottom
-                               # Задание №2. Отображаем текст
+  </footer>
+</body>
+</html>
                                
-
-                               # Задание №3. Отображаем цвет 
-                               
-                               
-                               #Задание №3. Отоброжаем расположение текста
-
-                               )
-    else:
-        # отображаем первое изображение по умолчанию
-        return render_template('index.html', selected_image='logo.svg')
-
-
-@app.route('/static/img/<path:path>')
-def serve_images(path):
-    return send_from_directory('static/img', path)
-
-app.run(debug=True)
